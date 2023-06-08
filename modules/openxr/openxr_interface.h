@@ -108,6 +108,15 @@ public:
 	virtual PackedStringArray get_suggested_tracker_names() const override;
 	virtual TrackingStatus get_tracking_status() const override;
 
+	// Eye tracking
+	enum EyeGazeCapabilities {
+		XR_EYE_GAZE_UNAVAILABLE, // The eye gaze interaction is not available,
+		XR_EYE_GAZE_LIMITED, // The eye gaze interaction is available in limited form,
+		XR_EYE_GAZE_SUPPORTED, // The eye gaze interaction is supported
+	};
+
+	EyeGazeCapabilities get_eye_gaze_capabilities();
+
 	bool initialize_on_startup() const;
 	virtual bool is_initialized() const override;
 	virtual bool initialize() override;
@@ -165,5 +174,7 @@ public:
 	OpenXRInterface();
 	~OpenXRInterface();
 };
+
+VARIANT_ENUM_CAST(OpenXRInterface::EyeGazeCapabilities);
 
 #endif // OPENXR_INTERFACE_H

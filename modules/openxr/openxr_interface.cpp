@@ -34,6 +34,8 @@
 #include "core/io/resource_saver.h"
 #include "servers/rendering/rendering_server_globals.h"
 
+#include "extensions/openxr_eye_gaze_interaction.h"
+
 void OpenXRInterface::_bind_methods() {
 	// lifecycle signals
 	ADD_SIGNAL(MethodInfo("session_begun"));
@@ -57,6 +59,12 @@ void OpenXRInterface::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_action_sets"), &OpenXRInterface::get_action_sets);
 
 	ClassDB::bind_method(D_METHOD("get_available_display_refresh_rates"), &OpenXRInterface::get_available_display_refresh_rates);
+
+	ClassDB::bind_method(D_METHOD("get_eye_gaze_capabilities"), &OpenXRInterface::get_eye_gaze_capabilities);
+
+	BIND_ENUM_CONSTANT(XR_EYE_GAZE_UNAVAILABLE);
+	BIND_ENUM_CONSTANT(XR_EYE_GAZE_LIMITED);
+	BIND_ENUM_CONSTANT(XR_EYE_GAZE_SUPPORTED);
 }
 
 StringName OpenXRInterface::get_name() const {
@@ -90,7 +98,9 @@ PackedStringArray OpenXRInterface::get_suggested_tracker_names() const {
 		"/user/vive_tracker_htcx/role/waist",
 		"/user/vive_tracker_htcx/role/chest",
 		"/user/vive_tracker_htcx/role/camera",
-		"/user/vive_tracker_htcx/role/keyboard"
+		"/user/vive_tracker_htcx/role/keyboard",
+
+		"/user/eyes_ext",
 	};
 
 	return arr;
@@ -638,6 +648,25 @@ Array OpenXRInterface::get_available_display_refresh_rates() const {
 		return Array();
 	} else {
 		return openxr_api->get_available_display_refresh_rates();
+	}
+}
+
+OpenXRInterface::EyeGazeCapabilities OpenXRInterface::get_eye_gaze_capabilities() {
+	if (openxr_api == nullptr) {
+		return XR_EYE_GAZE_UNAVAILABLE;
+	} else if (!openxr_api->is_initialized()) {
+		return XR_EYE_GAZE_UNAVAILABLE;
+	} else {
+		OpenXREyeGazeInteractionExtension *eye_gaze_ext = OpenXREyeGazeInteractionExtension::get_singleton();
+		if (eye_gaze_ext == nullptr) {
+			return XR_EYE_GAZE_UNAVAILABLE;
+		} else if (!eye_gaze_ext->is_available()) {
+			return XR_EYE_GAZE_UNAVAILABLE;
+		} else if (eye_gaze_ext->supports_eye_gaze()) {
+			return XR_EYE_GAZE_SUPPORTED;
+		} else {
+			return XR_EYE_GAZE_LIMITED;
+		}
 	}
 }
 

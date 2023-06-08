@@ -23,6 +23,13 @@
 				Returns display refresh rates supported by the current HMD. Only returned if this feature is supported by the OpenXR runtime and after the interface has been initialized.
 			</description>
 		</method>
+		<method name="get_eye_gaze_capabilities">
+			<return type="int" enum="OpenXRInterface.EyeGazeCapabilities" />
+			<description>
+				Returns the capabilities of the eye gaze interaction extension.
+				Note: this only returns a valid value after OpenXR has been initialized.
+			</description>
+		</method>
 		<method name="is_action_set_active" qualifiers="const">
 			<return type="bool" />
 			<param index="0" name="name" type="String" />
@@ -74,4 +81,15 @@
 			</description>
 		</signal>
 	</signals>
+	<constants>
+		<constant name="XR_EYE_GAZE_UNAVAILABLE" value="0" enum="EyeGazeCapabilities">
+			No eye gaze interaction functionality is available.
+		</constant>
+		<constant name="XR_EYE_GAZE_LIMITED" value="1" enum="EyeGazeCapabilities">
+			Limited eye gaze interaction functionality is available, pose data will be returned but is not accurate enough for aiming/targeting.
+		</constant>
+		<constant name="XR_EYE_GAZE_SUPPORTED" value="2" enum="EyeGazeCapabilities">
+			The eye gaze interaction functionality is fully supported.
+		</constant>
+	</constants>
 </class>
